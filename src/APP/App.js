@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import XDrawer from '../components/layout/XDrawer'
 import Student from '../components/pages/student/Student';
-
+//, Route, Routes
 export default function App() {
   return (
     <>

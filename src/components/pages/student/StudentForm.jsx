@@ -3,6 +3,7 @@ import { Formik, Form } from "formik";
 import Control from "../../controls/Control";
 import * as Yup from "yup";
 import { Grid, Box } from "@mui/material";
+import StudentService from "../../service/StudentService";
 
 const genderItems = [
   { key: "Male", value: "male" },
@@ -11,6 +12,7 @@ const genderItems = [
 ];
 
 export default function StudentForm() {
+  const [values, setValues]= useState();
   const initialValues = {
     firstName: "",
     secondName: "",
@@ -32,6 +34,13 @@ export default function StudentForm() {
     phoneNumber: Yup.number().min(9, "Must be more than 10 characters").required("Required")
   });
   const onSubmit = (values) => console.log("Form date", values);
+  const handleSubmit = async(e,values) =>{
+    e.preventDefault();
+    await StudentService.create(values).then((response)=>{
+      console.log("crete");
+    })
+  }
+
   const today = new Date().toISOString().split("T")[0];
   return (
     <>

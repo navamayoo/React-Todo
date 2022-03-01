@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import Control from "../../controls/Control";
 import * as Yup from "yup";
@@ -12,7 +12,6 @@ const genderItems = [
 ];
 
 export default function StudentForm() {
-  const [values, setValues]= useState();
   const initialValues = {
     firstName: "",
     secondName: "",
@@ -23,6 +22,8 @@ export default function StudentForm() {
     gender: "",
     phoneNumber: "",
   };
+  const [values, setValues] = useState(initialValues);
+
   const validationSchema = Yup.object({
     firstName: Yup.string().required("Required"),
     secondName: Yup.string().required("Required"),
@@ -31,15 +32,24 @@ export default function StudentForm() {
     email: Yup.string().email("Invalid Email Format").required("Required!"),
     dob: Yup.string().required("Required"),
     gender: Yup.string().required("Required"),
-    phoneNumber: Yup.number().min(9, "Must be more than 10 characters").required("Required")
+    phoneNumber: Yup.number()
+      .min(9, "Must be more than 10 characters")
+      .required("Required"),
   });
-  const onSubmit = (values) => console.log("Form date", values);
-  const handleSubmit = async(e,values) =>{
-    e.preventDefault();
-    await StudentService.create(values).then((response)=>{
+
+  const handleSubmit = async (values) => {
+    // e.preventDefault();
+   
+    await StudentService.create(values).then((response) => {
+      resetForm();
       console.log("crete");
-    })
-  }
+      setValues(initialValues);
+    });
+  };
+
+  const resetForm = () => {
+    setValues(initialValues);
+  };
 
   const today = new Date().toISOString().split("T")[0];
   return (
@@ -47,7 +57,9 @@ export default function StudentForm() {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={onSubmit}
+        onSubmit={async (values) => {
+          await handleSubmit(values);
+        }}
       >
         {(formik) => (
           <Form>
@@ -66,10 +78,8 @@ export default function StudentForm() {
                 <Grid item xs={12}>
                   <Control.Input name="address2" label="Address Line 2" />
                 </Grid>
-                <Grid item xs={12}>
-                  <Control.Input name="email" label="Email" />
-                </Grid>
-                <Grid item xs={4}>
+               
+                <Grid item xs={6}>
                   <Control.RadioButton
                     name="gender"
                     label="Gender"
@@ -77,7 +87,7 @@ export default function StudentForm() {
                     size="small"
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                   <Control.Input
                     type="date"
                     label="Date Of Birth"
@@ -90,14 +100,15 @@ export default function StudentForm() {
                     }}
                   />
                 </Grid>
-                
-                <Grid item xs={4}>
+                <Grid item xs={12}>
+                  <Control.Input name="email" label="Email" />
+                </Grid>
+                <Grid item xs={6}>
                   <Control.Input name="phoneNumber" label="Phone Number" />
                 </Grid>
-                {/* <Grid item xs={4}>
-                  <button type="submit">Submit</button>
-                </Grid> */}
-                <Control.Button type="submit" text="Submit" />
+                <Grid item xs={4}>
+                  <Control.Button type="submit" text="Submit" />
+                </Grid>
               </Grid>
             </Box>
           </Form>

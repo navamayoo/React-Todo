@@ -14,7 +14,21 @@ class StudentService{
             if(message.errorInfo) throw message.errorInfo[2];
             else throw e.message;
         });
+    };
+
+    getAll = async()=>{
+        try{
+            const response = await axios({
+                 method:"get",
+                 url: `${API_URL}student`
+            });
+            return response.data;
+
+        }catch(e){
+            throw e.message;
+        };
     }
+
 
 }
 

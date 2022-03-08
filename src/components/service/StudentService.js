@@ -29,6 +29,29 @@ class StudentService{
         };
     }
 
+    getByCode = async(code)=>{
+        try{
+            const response = await axios({
+                method: "GET",
+                url:`${API_URL}student/${code}`
+            });
+            return response.data
+        }catch(e){
+            throw e.message;
+        };
+        
+    }
+    update = async(code,student)=>{
+        await axios({
+            method:"PUT",
+            url:`${API_URL}student/${code}`,
+            data:student,
+        }).catch((e)=>{
+            const{message} = e.response.data;
+            if(message.errorInfo) throw message.errorInfo[2];
+            else throw e.message;
+        });
+    };
 
 }
 

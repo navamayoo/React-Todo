@@ -11,7 +11,7 @@ import { Field, ErrorMessage } from "formik";
 import Error from "./ErrorMessage";
 
 export default function RadioButton(props) {
-  const { name, label, options, ...rest } = props;
+  const { name,value, label, options, ...rest } = props;
 
   return (
     <>

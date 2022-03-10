@@ -11,7 +11,7 @@ const genderItems = [
   { key: "Other", value: "other" },
 ];
 
-export default function StudentForm({data,setFormSubmitted}) {
+export default function StudentForm({ studentCode, loading, setLoading,setFormSubmitted }) {
   const initialValues = {
     firstName: "",
     secondName: "",
@@ -22,7 +22,7 @@ export default function StudentForm({data,setFormSubmitted}) {
     gender: "",
     phoneNumber: "",
   };
-  const [values, setValues] = useState(initialValues);
+  const [form, setForm] = useState(initialValues);
 
   const validationSchema = Yup.object({
     firstName: Yup.string().required("Required"),
@@ -38,93 +38,109 @@ export default function StudentForm({data,setFormSubmitted}) {
   });
 
   const handelSubmit = async (values) => {
-   if(validationSchema){
-      if(data.code){
-        await StudentService.update(data.code,values).then((response) => {
+    if (validationSchema) {
+      if (studentCode) {
+        await StudentService.update(studentCode, values).then((response) => {
           console.log("update");
-
         });
-      }else{
+      } else {
         await StudentService.create(values).then((response) => {
           console.log("crete");
         });
       }
-   }
-   setFormSubmitted((prev) => prev + 1);
+    }
+     setFormSubmitted((prev) => prev + 1);
   };
 
   useEffect(() => {
-    if (data != null) {
-      setValues(data);
-     // console.log("form Load", data);
+    if (studentCode != null) {
+      getStudentByCode(studentCode);
+      // setValues(data);
+      // console.log("form Load", data);
+    } else {
+      setLoading(true);
     }
-  }, [data]);
+  }, [studentCode]);
+
+  const getStudentByCode = async (code) => {
+    await StudentService.getByCode(code)
+      .then((response) => {
+        setForm(response.student);
+        setLoading(true);
+        console.log("from data", response.student);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
   const today = new Date().toISOString().split("T")[0];
   return (
     <>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={async (values, onSubmitProps) => {
-          await handelSubmit(values);
-          onSubmitProps.resetForm();
-        }}
-      >
-        {(formik) => (
-          <Form>
-            <Box sx={{ flexGrow: 1 }} spacing={2}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Control.Input name="firstName" label="First Name" value={values.firstName}/>
+      {loading ? (
+        <Formik
+          initialValues={form}
+          validationSchema={validationSchema}
+          onSubmit={async (values, onSubmitProps) => {
+            await handelSubmit(values);
+            onSubmitProps.resetForm();
+          }}
+        >
+          {() => (
+            <Form>
+              <Box sx={{ flexGrow: 1 }} spacing={2}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Control.Input name="firstName" label="First Name" />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Control.Input name="secondName" label="Second Name" />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Control.Input name="address1" label="Address Line 1" />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Control.Input name="address2" label="Address Line 2" />
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Control.RadioButton
+                      name="gender"
+                      label="Gender"
+                      options={genderItems}
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Control.Input
+                      type="date"
+                      label="Date Of Birth"
+                      name="dob"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      inputProps={{
+                        max: today,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Control.Input name="email" label="Email" />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Control.Input name="phoneNumber" label="Phone Number" />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Control.Button type="submit" text="Submit" />
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Control.Input name="secondName" label="Second Name" value={values.secondName}/>
-                </Grid>
-                <Grid item xs={12}>
-                  <Control.Input name="address1" label="Address Line 1" value={values.address1}/>
-                </Grid>
-                <Grid item xs={12}>
-                  <Control.Input name="address2" label="Address Line 2" value={values.address2} />
-                </Grid>
-               
-                <Grid item xs={6}>
-                  <Control.RadioButton
-                    name="gender"
-                    label="Gender"
-                    options={genderItems}
-                    size="small"
-                    value={values.gender}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <Control.Input
-                    type="date"
-                    label="Date Of Birth"
-                    name="dob"
-                    value={values.dob}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    inputProps={{
-                      max: today,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Control.Input name="email" label="Email" value={values.email}/>
-                </Grid>
-                <Grid item xs={6}>
-                  <Control.Input name="phoneNumber" label="Phone Number" value={values.phoneNumber}/>
-                </Grid>
-                <Grid item xs={4}>
-                  <Control.Button type="submit" text="Submit" />
-                </Grid>
-              </Grid>
-            </Box>
-          </Form>
-        )}
-      </Formik>
+              </Box>
+            </Form>
+          )}
+        </Formik>
+      ) : (
+        "Loading"
+      )}
     </>
   );
 }

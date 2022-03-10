@@ -33,10 +33,10 @@ export default function Student() {
   const classes = useStyles();
   const [records, setRecords] = useState({});
   const [openPopup, setOpenPopup] = useState(false);
-  const [FormSubmitted,setFormSubmitted] =useState(0);
-  const [data, setData]=useState({});
-
-
+  const [FormSubmitted, setFormSubmitted] = useState(0);
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [selectedStudentCode, setSelectedStudentCode] = useState(null);
 
   const getStudents = async () => {
     await StudentService.getAll()
@@ -50,18 +50,18 @@ export default function Student() {
 
   useEffect(() => {
     getStudents();
-  },[FormSubmitted]);
+  }, [FormSubmitted]);
 
-  const getStudentByCode = async (code) => {
-    await StudentService.getByCode(code)
-      .then((response) => {
-        setData(response.student);
-        console.log("from data",response.student)
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
+  // const getStudentByCode = async (code) => {
+  //   await StudentService.getByCode(code)
+  //     .then((response) => {
+  //       setData(response.student);
+  //       console.log("from data",response.student)
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // };
 
   return (
     <>
@@ -69,60 +69,61 @@ export default function Student() {
         title="Add New Student"
         icon={<PersonAddAlt1Icon fontSize="large" />}
       />
-       {/* <Paper elevation={0} variant="outlined" mt={10} style={{padding: 10,backgroundColor: "#e1f5fe",}}> */}
-       {/* <Paper elevation={0} variant="outlined"  style={{padding: 10}}>
+      {/* <Paper elevation={0} variant="outlined" mt={10} style={{padding: 10,backgroundColor: "#e1f5fe",}}> */}
+      {/* <Paper elevation={0} variant="outlined"  style={{padding: 10}}>
        <Container maxWidth="lg">
         <StudentForm />
       </Container>
 
        </Paper> */}
 
-
-
-     <Paper elevation={0} variant="outlined"  style={{ margin: "16px 0px", padding: 10 }}>
-     <Toolbar>
-        
+      <Paper
+        elevation={0}
+        variant="outlined"
+        style={{ margin: "16px 0px", padding: 10 }}
+      >
+        <Toolbar>
           <Control.Button
-            
             text="Add New"
             variant="outlined"
             onClick={() => {
-              
               setOpenPopup(true);
             }}
             startIcon={<AddIcon />}
           />
         </Toolbar>
-              <TableContainer container={Paper}>
-        <Table border="1">
-          <TableHead >
-            <TableRow  className={classes.root}>
-            <TableCell>Code</TableCell>
-              <TableCell>First Name</TableCell>
-              <TableCell>Second Name</TableCell>
-              <TableCell>E-mail</TableCell>
-              <TableCell>Date Of Birth</TableCell>
-              <TableCell>Gender</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {records.length > 0 
-            ? records.map((record)=>(
-              <TableRow  key={record.code}>
-              <TableCell>{record.code}</TableCell>
-              <TableCell>{record.firstName}</TableCell>
-              <TableCell>{record.secondName}</TableCell>
-              <TableCell>{record.email}</TableCell>
-              <TableCell>{record.dob}</TableCell>
-              <TableCell>{record.gender}</TableCell>
-             <TableCell>
+        <TableContainer container={Paper}>
+          <Table border="1">
+            <TableHead>
+              <TableRow className={classes.root}>
+                <TableCell>Code</TableCell>
+                <TableCell>First Name</TableCell>
+                <TableCell>Second Name</TableCell>
+                <TableCell>E-mail</TableCell>
+                <TableCell>Date Of Birth</TableCell>
+                <TableCell>Gender</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {records.length > 0
+                ? records.map((record) => (
+                    <TableRow key={record.code}>
+                      <TableCell>{record.code}</TableCell>
+                      <TableCell>{record.firstName}</TableCell>
+                      <TableCell>{record.secondName}</TableCell>
+                      <TableCell>{record.email}</TableCell>
+                      <TableCell>{record.dob}</TableCell>
+                      <TableCell>{record.gender}</TableCell>
+                      <TableCell>
                         <Control.ActionButton
                           size="small"
                           color="primary"
                           onClick={() => {
-                            getStudentByCode(record.code);
+                            // getStudentByCode(record.code);
                             setOpenPopup(true);
+                            setSelectedStudentCode(record.code);
+                            setLoading(false);
                           }}
                         >
                           <EditIcon fontSize="small" />
@@ -131,20 +132,27 @@ export default function Student() {
                           <DeleteIcon fontSize="small" />
                         </Control.ActionButton>
                       </TableCell>
-            </TableRow>
-            )): "Loading"}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                    </TableRow>
+                  ))
+                : "Loading"}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
       <Popup
         title="Student Form"
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-       
-        <StudentForm data={data} setFormSubmitted={setFormSubmitted} />
-
+        {/* <StudentForm data={data} setFormSubmitted={setFormSubmitted} /> */}
+        {openPopup && (
+          <StudentForm
+            studentCode={selectedStudentCode}
+            loading={loading}
+            setLoading={(val) => setLoading(val)}
+            setFormSubmitted={setFormSubmitted}
+          />
+        )}
       </Popup>
     </>
   );

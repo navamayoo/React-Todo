@@ -1,15 +1,25 @@
 
 import React from 'react';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes,Route } from "react-router-dom";
 import XDrawer from '../components/layout/XDrawer'
-import Student from '../components/pages/student/Student';
+import {routes} from '../components/route/routes'
 //, Route, Routes
 export default function App() {
   return (
     <>
     <BrowserRouter>
     <XDrawer>
-      <Student/>
+      <Routes>
+        {routes.map((route)=>(
+          <Route
+          key={route.label}
+                path={route.path}
+                element={route.component}
+          />
+        ))}
+
+      </Routes>
+      {/* <Student/> */}
     </XDrawer>
 
    

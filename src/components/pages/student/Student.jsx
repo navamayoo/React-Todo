@@ -34,7 +34,7 @@ export default function Student() {
   const [records, setRecords] = useState({});
   const [openPopup, setOpenPopup] = useState(false);
   const [FormSubmitted, setFormSubmitted] = useState(0);
-  const [data, setData] = useState({});
+  // const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedStudentCode, setSelectedStudentCode] = useState(null);
 
@@ -52,16 +52,7 @@ export default function Student() {
     getStudents();
   }, [FormSubmitted]);
 
-  // const getStudentByCode = async (code) => {
-  //   await StudentService.getByCode(code)
-  //     .then((response) => {
-  //       setData(response.student);
-  //       console.log("from data",response.student)
-  //     })
-  //     .catch((e) => {
-  //       console.log(e);
-  //     });
-  // };
+  
 
   return (
     <>
@@ -120,7 +111,6 @@ export default function Student() {
                           size="small"
                           color="primary"
                           onClick={() => {
-                            // getStudentByCode(record.code);
                             setOpenPopup(true);
                             setSelectedStudentCode(record.code);
                             setLoading(false);
@@ -144,7 +134,6 @@ export default function Student() {
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        {/* <StudentForm data={data} setFormSubmitted={setFormSubmitted} /> */}
         {openPopup && (
           <StudentForm
             studentCode={selectedStudentCode}
@@ -155,5 +144,6 @@ export default function Student() {
         )}
       </Popup>
     </>
+    
   );
 }

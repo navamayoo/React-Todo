@@ -55,12 +55,11 @@ export default function StudentForm({ studentCode, loading, setLoading,setFormSu
   useEffect(() => {
     if (studentCode != null) {
       getStudentByCode(studentCode);
-      // setValues(data);
-      // console.log("form Load", data);
     } else {
       setLoading(true);
     }
   }, [studentCode]);
+  
 
   const getStudentByCode = async (code) => {
     await StudentService.getByCode(code)
@@ -131,7 +130,8 @@ export default function StudentForm({ studentCode, loading, setLoading,setFormSu
                     <Control.Input name="phoneNumber" label="Phone Number" />
                   </Grid>
                   <Grid item xs={4}>
-                    <Control.Button type="submit" text="Submit" />
+                    <Control.Button type="submit" text="Submit" color="success"/>
+                    <Control.Button type="reset" text="Reset" />
                   </Grid>
                 </Grid>
               </Box>
